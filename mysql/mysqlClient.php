@@ -15,16 +15,23 @@ class mysqlClient
 	{
 		$this->server = new Swoole\Server(self::HOST, self::PORT);
 		$this->server->set([
-			 'daemonize' => true
+			 'daemonize' => false
 		]);
 
+        echo "123";
+        echo "4";
 		// 注册事件
 		$this->server->on("Connect", [$this, "onConnect"]);
+        echo "5";
 		$this->server->on("Receive", [$this, "onReceive"]);
+        echo "6";
 		$this->server->on("Close", [$this, "onClose"]);
 
+        echo "7";
 		// 启用服务
-		$this->server->start();
+		$bool = $this->server->start();
+        echo $bool;
+        echo "8";
 	}
 
 	/**
@@ -33,13 +40,13 @@ class mysqlClient
 	 */
 	public function onConnect($server, $fd)
 	{
-		echo "connection successful";
+		echo "connection successful1";
 		// 作为客户端连接本地Mysql 服务
 		$this->socket = $socket = new Co\Socket(AF_INET, SOCK_STREAM, 0);
 
 		// 创建一个协程
 		go(function () use ($socket, $server, $fd){
-			$res = $socket->connect("127.0.0.1", 3306);
+			$res = $socket->connect("127.0.0.1", 80);
 			while ($res) {
 				$data = $socket->recv();
 				if (!$data) break;
@@ -65,7 +72,7 @@ class mysqlClient
 	 */
 	public function onClose()
 	{
-		echo "connection closed";
+		echo "connection closed1";
 	}
 }
 
